@@ -744,8 +744,9 @@ describe("DashboardPage — leaderboard density", () => {
 
     // Scoped to the leaderboard card — the trend chart's metric toggle owns
     // a "Time" button too.
-    const card = screen.getByRole("list", { name: "Leaderboard" })
-      .parentElement as HTMLElement;
+    const card = screen
+      .getByRole("list", { name: "Leaderboard" })
+      .closest(".rounded-lg") as HTMLElement;
     // Re-ranking must not quietly reveal the tail: the cap belongs to the
     // list, not to one metric.
     await user.click(within(card).getByRole("button", { name: "Time" }));
@@ -762,5 +763,20 @@ describe("DashboardPage — leaderboard density", () => {
     expect(
       screen.queryByRole("button", { name: "Show all" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("contains wide leaderboard columns in a local horizontal scroller", () => {
+    renderDashboard();
+
+    const list = screen.getByRole("list", { name: "Leaderboard" });
+    const grid = list.parentElement;
+    const scroller = grid?.parentElement;
+
+    expect(grid).toHaveClass("min-w-[44rem]");
+    expect(scroller).toHaveClass(
+      "overflow-x-auto",
+      "overscroll-x-contain",
+      "[-webkit-overflow-scrolling:touch]",
+    );
   });
 });
