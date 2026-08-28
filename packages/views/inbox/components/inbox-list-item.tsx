@@ -194,7 +194,6 @@ export function InboxListItem({
               <IssueAgentActivityIndicator
                 issueId={item.issue_id}
                 hoverCard={false}
-                hideLabelOnMobile
               />
             )}
             <span className={`text-caption ${showUnread ? "text-muted-foreground" : "text-muted-foreground"}`}>

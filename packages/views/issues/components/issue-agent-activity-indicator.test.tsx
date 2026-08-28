@@ -133,19 +133,6 @@ describe("IssueAgentActivityIndicator", () => {
     expect(screen.getByText("Working")).not.toBeNull();
   });
 
-  it("can hide only the status label on mobile", () => {
-    render(
-      <IssueAgentActivityIndicator
-        issueId="issue-1"
-        hoverCard={false}
-        hideLabelOnMobile
-      />,
-    );
-
-    expect(screen.getByTestId("agent-avatar-stack")).not.toBeNull();
-    expect(screen.getByText("Working").className).toContain("hidden md:inline");
-  });
-
   it("renders nothing when no agent is on the issue", () => {
     mockState.snapshot = [];
     const { container } = render(

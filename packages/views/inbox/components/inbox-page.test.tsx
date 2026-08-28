@@ -248,6 +248,16 @@ describe("InboxPage", () => {
     expect(titleCount?.animated).toBe(false);
   });
 
+  it("hides the issue header Agent label on mobile without changing desktop behavior", () => {
+    reset();
+    listData.active = [item()];
+    searchParams = new URLSearchParams("issue=issue-1");
+
+    render(<InboxPage />);
+
+    expect(issueDetailProps.at(-1)?.hideAgentLabelOnMobile).toBe(true);
+  });
+
   it("shows the active list by default", () => {
     reset();
     listData.active = [item({ id: "active-1" })];

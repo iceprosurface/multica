@@ -42,10 +42,13 @@ import { useT } from "../../i18n";
 
 interface IssueAgentHeaderChipProps {
   issueId: string;
+  /** Keep the avatar cue but reclaim label width in a compact host header. */
+  hideLabelOnMobile?: boolean;
 }
 
 export const IssueAgentHeaderChip = memo(function IssueAgentHeaderChip({
   issueId,
+  hideLabelOnMobile = false,
 }: IssueAgentHeaderChipProps) {
   const { t } = useT("issues");
   // Same query options as ExecutionLogSection so both observe one cache entry.
@@ -93,6 +96,7 @@ export const IssueAgentHeaderChip = memo(function IssueAgentHeaderChip({
           issueId={issueId}
           running={running}
           queued={queued}
+          hideLabelOnMobile={hideLabelOnMobile}
           onTranscriptOpenChange={(task, open) => {
             setOpenedTranscriptTaskSnapshot(open ? task : null);
           }}
@@ -119,6 +123,7 @@ interface ActiveChipProps {
   issueId: string;
   running: AgentTask[];
   queued: AgentTask[];
+  hideLabelOnMobile: boolean;
   onTranscriptOpenChange: (task: AgentTask, open: boolean) => void;
 }
 
@@ -126,6 +131,7 @@ function ActiveChip({
   issueId,
   running,
   queued,
+  hideLabelOnMobile,
   onTranscriptOpenChange,
 }: ActiveChipProps) {
   const { t } = useT("issues");
@@ -191,7 +197,11 @@ function ActiveChip({
             opacity={anyRunning ? "full" : "half"}
           />
           <span
-            className={`min-w-0 truncate text-caption ${anyRunning ? "text-info" : "text-muted-foreground"}`}
+            className={cn(
+              "min-w-0 truncate text-caption",
+              hideLabelOnMobile && "hidden md:inline",
+              anyRunning ? "text-info" : "text-muted-foreground",
+            )}
           >
             {label}
           </span>

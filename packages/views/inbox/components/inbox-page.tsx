@@ -694,6 +694,7 @@ export function InboxPage() {
         highlightCommentId={detailItem.details?.comment_id ?? undefined}
         highlightRequestToken={highlightRequestToken}
         leadingAction={compactBackAction}
+        hideAgentLabelOnMobile
         onDelete={() => {
           // Issue deletion CASCADE-deletes the inbox item server-side, and the
           // issue:deleted WS event prunes it from the inbox cache. Just clear

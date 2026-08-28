@@ -318,6 +318,20 @@ describe("IssueAgentHeaderChip", () => {
     expect(screen.getByText("Walt 在工作")).toBeInTheDocument();
   });
 
+  it("can hide the visible label on mobile while preserving the avatar and accessible name", () => {
+    mockState.tasks = [makeTask({ status: "queued" })];
+
+    renderWithI18n(
+      <IssueAgentHeaderChip issueId="issue-1" hideLabelOnMobile />,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Walt is queued" });
+    expect(trigger.querySelector("[data-slot='avatar']")).not.toBeNull();
+    expect(screen.getByText("Walt is queued").className).toContain(
+      "hidden md:inline",
+    );
+  });
+
   it("does not render when the issue has only terminal tasks", () => {
     // The list is issue-scoped by the endpoint, so the chip's only job is to
     // ignore terminal statuses (those are the execution log's story).

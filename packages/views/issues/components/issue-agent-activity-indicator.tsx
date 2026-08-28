@@ -47,9 +47,6 @@ interface IssueAgentActivityIndicatorProps {
   // Whether hovering opens the activity card. Opt OUT where the card's only
   // incremental information is not worth a popup (Inbox — see below).
   hoverCard?: boolean;
-  // Dense mobile rows can keep the avatar cue while reclaiming the width used
-  // by the status copy. Other surfaces retain the label at every breakpoint.
-  hideLabelOnMobile?: boolean;
 }
 
 /**
@@ -93,7 +90,6 @@ export const IssueAgentActivityIndicator = memo(function IssueAgentActivityIndic
   issueId,
   size = "xs",
   hoverCard = true,
-  hideLabelOnMobile = false,
 }: IssueAgentActivityIndicatorProps) {
   const { t } = useT("issues");
   const wsId = useWorkspaceId();
@@ -135,7 +131,6 @@ export const IssueAgentActivityIndicator = memo(function IssueAgentActivityIndic
       <span
         className={cn(
           "text-micro",
-          hideLabelOnMobile && "hidden md:inline",
           isRunning
             ? "animate-chat-text-shimmer"
             : "text-muted-foreground",
