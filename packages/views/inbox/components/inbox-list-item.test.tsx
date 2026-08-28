@@ -41,14 +41,17 @@ vi.mock("../../issues/components/issue-agent-activity-indicator", () => ({
   IssueAgentActivityIndicator: ({
     issueId,
     hoverCard,
+    hideLabelOnMobile,
   }: {
     issueId: string;
     hoverCard?: boolean;
+    hideLabelOnMobile?: boolean;
   }) => (
     <span
       data-testid="issue-agent-activity"
       data-issue-id={issueId}
       data-hover-card={hoverCard === false ? "false" : "true"}
+      data-hide-label-on-mobile={hideLabelOnMobile === true ? "true" : "false"}
     />
   ),
 }));
@@ -183,6 +186,16 @@ describe("InboxListItem issue activity", () => {
     expect(
       getByTestId("issue-agent-activity").getAttribute("data-hover-card"),
     ).toBe("false");
+  });
+
+  it("keeps the activity avatar but hides its status label on mobile", () => {
+    const { getByTestId } = renderRow({ item: item(), view: "inbox" });
+
+    expect(
+      getByTestId("issue-agent-activity").getAttribute(
+        "data-hide-label-on-mobile",
+      ),
+    ).toBe("true");
   });
 
   it("omits issue activity for a notification without an issue", () => {
