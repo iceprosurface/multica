@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { EyeOff, Trash2 } from "lucide-react";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { formatTokens } from "../../runtimes/utils";
@@ -13,6 +13,7 @@ import {
   type AgentDashboardRow,
 } from "../utils";
 import { Segmented } from "./dashboard-shared";
+import "./leaderboard.css";
 
 // Which metric ranks the leaderboard. Drives row order, progress bar
 // width, and which column header is emphasised — keeping the three in
@@ -33,8 +34,19 @@ const SORT_METRIC: Record<LeaderboardSort, (r: AgentDashboardRow) => number> = {
 // tail is reachable via the toggle.
 const LEADERBOARD_LIMIT = 10;
 
-const LEADERBOARD_GRID =
-  "grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_5rem_5rem_5rem_4rem] items-center gap-3";
+// The flexible columns own the readability constraints they protect instead
+// of deriving them from a detached total width. Agent keeps a 24px avatar, an
+// 8px gap, and 128px of readable name; Progress keeps its 8px bar at a 12:1
+// comparison length. `fit-content` lets those floors plus the fixed tracks,
+// gaps, and row padding form the intrinsic scroll width while the fr tracks
+// still expand on wider cards.
+const LEADERBOARD_GRID_STYLE = {
+  minWidth: "fit-content",
+  gridTemplateColumns:
+    "minmax(10rem, 1.6fr) minmax(6rem, 1fr) 5rem 5rem 5rem 4rem",
+} satisfies CSSProperties;
+
+const LEADERBOARD_GRID = "grid items-center gap-3";
 
 export function Leaderboard({
   rows,
@@ -135,17 +147,31 @@ export function Leaderboard({
           {t(($) => $.leaderboard.no_data)}
         </p>
       ) : (
-        <div className="overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
-          <div className="min-w-[44rem]">
+        <div
+          role="region"
+          aria-label={t(($) => $.leaderboard.title)}
+          tabIndex={0}
+          className="leaderboard-scroll-region overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]"
+        >
+          <div>
             <div
               className={`${LEADERBOARD_GRID} border-b px-4 py-2 text-caption font-medium text-muted-foreground`}
+              style={LEADERBOARD_GRID_STYLE}
             >
               <span>{t(($) => $.leaderboard.header_agent)}</span>
               <span />
-              <span className={colClass("tokens")}>{t(($) => $.leaderboard.header_tokens)}</span>
-              <span className={colClass("cost")}>{t(($) => $.leaderboard.header_cost)}</span>
-              <span className={colClass("time")}>{t(($) => $.leaderboard.header_time)}</span>
-              <span className={colClass("tasks")}>{t(($) => $.leaderboard.header_tasks)}</span>
+              <span className={colClass("tokens")}>
+                {t(($) => $.leaderboard.header_tokens)}
+              </span>
+              <span className={colClass("cost")}>
+                {t(($) => $.leaderboard.header_cost)}
+              </span>
+              <span className={colClass("time")}>
+                {t(($) => $.leaderboard.header_time)}
+              </span>
+              <span className={colClass("tasks")}>
+                {t(($) => $.leaderboard.header_tasks)}
+              </span>
             </div>
             {/* A real list, like the offender list on the Errors tab: the rows are
                 a truncated ranking, so screen readers need the count and the
@@ -168,13 +194,18 @@ export function Leaderboard({
                 // agent-builder sessions, which nobody can name — including the
                 // admin who owns them.
                 const isDeletedBucket = row.agentId === DELETED_AGENTS_ROW_ID;
-                const isRestrictedBucket = row.agentId === RESTRICTED_AGENTS_ROW_ID;
+                const isRestrictedBucket =
+                  row.agentId === RESTRICTED_AGENTS_ROW_ID;
                 const isBucket = isDeletedBucket || isRestrictedBucket;
                 const agent = agents.find((a) => a.id === row.agentId);
                 const value = SORT_METRIC[sortBy](row);
                 const pct = maxValue > 0 ? (value / maxValue) * 100 : 0;
                 return (
-                  <li key={row.agentId} className={`${LEADERBOARD_GRID} px-4 py-2`}>
+                  <li
+                    key={row.agentId}
+                    className={`${LEADERBOARD_GRID} px-4 py-2`}
+                    style={LEADERBOARD_GRID_STYLE}
+                  >
                     <div className="flex min-w-0 items-center gap-2">
                       {isBucket ? (
                         <>
